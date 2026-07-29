@@ -5,7 +5,7 @@ export default function Footer() {
         <div className="col-span-1">
           <div className="text-headline-md font-headline-md font-bold text-primary mb-md">CyberSpice</div>
           <p className="text-body-sm text-secondary">
-            The world's leading professional marketplace for bulk spice and agricultural commodities trading.
+            Asia's trusted marketplace for bulk spice and agricultural commodities trading.
           </p>
         </div>
         <div>
@@ -14,14 +14,6 @@ export default function Footer() {
             <li><a className="hover:text-primary transition-colors" href="#">Market Index</a></li>
             <li><a className="hover:text-primary transition-colors" href="#">Bulk Purchasing</a></li>
             <li><a className="hover:text-primary transition-colors" href="#">Selling Spices</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 className="text-label-caps text-primary mb-md uppercase">Support</h4>
-          <ul className="space-y-sm text-body-sm text-secondary">
-            <li><a className="hover:text-primary transition-colors" href="#">Quality Control</a></li>
-            <li><a className="hover:text-primary transition-colors" href="#">Shipping &amp; Logistics</a></li>
-            <li><a className="hover:text-primary transition-colors" href="#">Terms of Trade</a></li>
           </ul>
         </div>
         <div>
@@ -37,7 +29,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="max-w-container-max mx-auto px-lg mt-xl pt-md border-t border-outline-variant text-center text-label-md text-outline">
-        © 2024 CyberSpice Technology. All rights reserved. Precision in every grain.
+        © 2026 CyberSpice by Jephil Rejimon.
       </div>
     </footer>
   );

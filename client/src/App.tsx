@@ -2,7 +2,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
-import { Buy, Sell, Insights } from "./pages/Placeholders";
+import Buy from "./pages/Buy";
+import Sell from "./pages/Sell";
+import { Insights } from "./pages/Placeholders";
 
 function App() {
   return (
