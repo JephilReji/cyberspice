@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Buy from "./pages/Buy";
 import Sell from "./pages/Sell";
 import { Insights } from "./pages/Placeholders";
+import ListingDetail from "./pages/ListingDetail";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path="/buy" element={<Buy />} />
       <Route path="/sell" element={<Sell />} />
       <Route path="/insights" element={<Insights />} />
+      <Route path="/listing/:id" element={<ListingDetail />} />
     </Routes>
   );
 }

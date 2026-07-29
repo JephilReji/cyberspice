@@ -72,3 +72,8 @@ export async function createListing(payload: CreateListingPayload) {
   });
   return data;
 }
+
+export async function getListingById(id: string) {
+  const { data } = await apiClient.get<Listing>(`/listings/${id}`);
+  return data;
+}

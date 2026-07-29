@@ -5,11 +5,13 @@ import BottomNav from "../components/BottomNav";
 import { getAllListings } from "../api/listings";
 import type { Listing } from "../api/listings";
 import { resolveImageUrl } from "../api/client";
+import { useNavigate } from "react-router-dom";
 
 export default function Buy() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
@@ -91,8 +93,9 @@ export default function Buy() {
                         </span>
                       </div>
                     </div>
-                    <button className="w-full h-12 bg-primary text-on-primary font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all">
-                      Check Item
+                    <button onClick={() => navigate(`/listing/${listing._id}`)}
+                      className="w-full h-12 bg-primary text-on-primary font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all">
+                        Check Item 
                     </button>
                   </div>
                 </div>

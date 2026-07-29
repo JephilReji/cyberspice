@@ -1,12 +1,15 @@
 import { Router } from "express";
-import { getFeaturedListings, getAllListings, createListing } from "../controllers/listingController";
+import { getFeaturedListings, getAllListings, createListing, getListingById } from "../controllers/listingController";
 import { requireAuth } from "../middleware/requireAuth";
 import { upload } from "../config/upload";
+
 
 const router = Router();
 
 router.get("/featured", getFeaturedListings);
 router.get("/", getAllListings);
+router.get("/:id", getListingById);
+
 
 router.post(
   "/",

@@ -81,3 +81,16 @@ export async function createListing(req: AuthRequest, res: Response) {
     return res.status(500).json({ message: "Could not create listing." });
   }
 }
+
+export async function getListingById(req: AuthRequest, res: Response) {
+  try {
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+      return res.status(404).json({ message: "Listing not found." });
+    }
+    return res.json(listing);
+  } catch (err) {
+    console.error("Get listing error:", err);
+    return res.status(500).json({ message: "Could not load listing." });
+  }
+}
