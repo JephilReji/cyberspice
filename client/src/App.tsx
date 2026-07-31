@@ -4,8 +4,9 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Buy from "./pages/Buy";
 import Sell from "./pages/Sell";
-import { Insights } from "./pages/Placeholders";
+import Insights from "./pages/Insights";
 import ListingDetail from "./pages/ListingDetail";
+import NewsArticle from "./pages/NewsArticle";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Route path="/sell" element={<Sell />} />
       <Route path="/insights" element={<Insights />} />
       <Route path="/listing/:id" element={<ListingDetail />} />
+      <Route path="/news/:articleId" element={<NewsArticle />} />
     </Routes>
   );
 }

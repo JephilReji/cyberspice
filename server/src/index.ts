@@ -7,14 +7,13 @@ import cors from "cors";
 import { connectDB } from "./config/db";
 import authRoutes from "./routes/authRoutes";
 import listingRoutes from "./routes/listingRoutes";
+import insightsRoutes from "./routes/insightsRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-
-// Serve uploaded listing images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/api/health", (_req, res) => {
@@ -23,6 +22,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/listings", listingRoutes);
+app.use("/api/insights", insightsRoutes);
 
 async function start() {
   await connectDB();
