@@ -27,8 +27,8 @@ function fetchFromNewsdata(): Promise<NewsArticle[]> {
       return;
     }
 
-    const query = encodeURIComponent("spices OR pepper OR cardamom OR turmeric OR saffron OR agriculture");
-    const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&q=${query}&language=en&category=business,food&size=9`;
+    const query = encodeURIComponent("spices ");
+    const url = `https://newsdata.io/api/1/news?apikey=${apiKey}&q=${query}&language=en&size=9`;
 
     https.get(url, (res) => {
       let raw = "";
@@ -38,9 +38,11 @@ function fetchFromNewsdata(): Promise<NewsArticle[]> {
           const parsed = JSON.parse(raw);
           if (parsed.status === "success") {
             resolve(parsed.results as NewsArticle[]);
-          } else {
-            reject(new Error(parsed.message || "Newsdata API error"));
-          }
+          } 
+        else {
+        console.error("Newsdata API rejected:", JSON.stringify(parsed));
+        reject(new Error(parsed.message || "Newsdata API error"));
+            }
         } catch (e) {
           reject(e);
         }

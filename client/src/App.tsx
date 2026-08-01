@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Buy from "./pages/Buy";
 import Sell from "./pages/Sell";
 import Insights from "./pages/Insights";
+import Orders from "./pages/Orders";
 import ListingDetail from "./pages/ListingDetail";
 import NewsArticle from "./pages/NewsArticle";
 
@@ -18,6 +19,7 @@ function App() {
       <Route path="/buy" element={<Buy />} />
       <Route path="/sell" element={<Sell />} />
       <Route path="/insights" element={<Insights />} />
+      <Route path="/orders" element={<Orders />} />
       <Route path="/listing/:id" element={<ListingDetail />} />
       <Route path="/news/:articleId" element={<NewsArticle />} />
     </Routes>
