@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import https from "https";
 import { Listing } from "../models/Listing";
 
-// Simple in-memory cache so we don't burn through the 500 req/day free limit
+// Cache for news articles to reduce API calls
 let newsCache: { data: NewsArticle[]; fetchedAt: number } | null = null;
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
@@ -16,7 +16,7 @@ export interface NewsArticle {
   pubDate: string;
   category: string[];
   keywords: string[] | null;
-  image_url: string | null; // We'll use Unsplash fallback when this is null
+  image_url: string | null; // uses unsplash fallback if null or empty
 }
 
 function fetchFromNewsdata(): Promise<NewsArticle[]> {
@@ -40,7 +40,7 @@ function fetchFromNewsdata(): Promise<NewsArticle[]> {
             resolve(parsed.results as NewsArticle[]);
           } 
         else {
-        console.error("Newsdata API rejected:", JSON.stringify(parsed));
+        console.error("Newsdata API rejected:", JSON.stringify(parsed)); //added to log the error response from the API
         reject(new Error(parsed.message || "Newsdata API error"));
             }
         } catch (e) {
