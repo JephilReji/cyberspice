@@ -6,6 +6,10 @@ import Buy from "./pages/Buy";
 import Sell from "./pages/Sell";
 import Insights from "./pages/Insights";
 import Orders from "./pages/Orders";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
+import OrderSuccess from "./pages/OrderSuccess";
 import ListingDetail from "./pages/ListingDetail";
 import NewsArticle from "./pages/NewsArticle";
 
@@ -20,6 +24,10 @@ function App() {
       <Route path="/sell" element={<Sell />} />
       <Route path="/insights" element={<Insights />} />
       <Route path="/orders" element={<Orders />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/payment" element={<Payment />} />
+      <Route path="/order-success" element={<OrderSuccess />} />
       <Route path="/listing/:id" element={<ListingDetail />} />
       <Route path="/news/:articleId" element={<NewsArticle />} />
     </Routes>

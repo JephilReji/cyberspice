@@ -8,6 +8,7 @@ import { connectDB } from "./config/db";
 import authRoutes from "./routes/authRoutes";
 import listingRoutes from "./routes/listingRoutes";
 import insightsRoutes from "./routes/insightsRoutes";
+import orderRoutes from "./routes/orderRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/listings", listingRoutes);
 app.use("/api/insights", insightsRoutes);
+app.use("/api/orders", orderRoutes);
 
 async function start() {
   await connectDB();

@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
 const navLinks = [
   { label: "Home", path: "/dashboard" },
@@ -13,6 +14,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { totalItems } = useCart();
 
   function handleLogout() {
     logout();
@@ -54,6 +56,15 @@ export default function Navbar() {
               type="text"
             />
           </div>
+
+          <Link to="/cart" className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low transition-colors">
+            <span className="material-symbols-outlined text-on-surface">shopping_cart</span>
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {totalItems > 9 ? "9+" : totalItems}
+              </span>
+            )}
+          </Link>
 
           {user ? (
             <div className="relative group">
