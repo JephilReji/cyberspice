@@ -6,7 +6,14 @@ export interface AuthResponse {
     id: string;
     name: string;
     email: string;
+    isVerified: boolean;
+    photoUrl?: string;
   };
+}
+
+export async function sendOtp(email: string) {
+  const { data } = await apiClient.post("/auth/send-otp", { email });
+  return data;
 }
 
 export async function loginWithEmail(email: string, password: string) {
@@ -19,6 +26,7 @@ export async function registerWithEmail(payload: {
   email: string;
   password: string;
   phone?: string;
+  otp: string;
 }) {
   const { data } = await apiClient.post<AuthResponse>("/auth/register", payload);
   return data;

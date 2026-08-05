@@ -333,13 +333,34 @@ export default function Sell() {
                 </div>
                 <div>
                   <label className="block text-label-md font-label-md text-on-surface mb-2">Harvest Date</label>
-                  <input
-                    type="text"
-                    value={harvestDate}
-                    onChange={(e) => setHarvestDate(e.target.value)}
-                    placeholder="e.g. Oct 2024"
-                    className="w-full h-12 bg-surface-container-low border border-outline-variant rounded-md px-4 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      value={harvestDate.split(" ")[0] ?? ""}
+                      onChange={(e) => {
+                        const parts = harvestDate.split(" ");
+                        setHarvestDate(`${e.target.value} ${parts[1] ?? ""}`);
+                      }}
+                      className="flex-1 h-12 bg-surface-container-low border border-outline-variant rounded-md px-2 outline-none focus:border-primary transition-all"
+                    >
+                      <option value="" disabled>Month</option>
+                      {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={harvestDate.split(" ")[1] ?? ""}
+                      onChange={(e) => {
+                        const parts = harvestDate.split(" ");
+                        setHarvestDate(`${parts[0] ?? ""} ${e.target.value}`);
+                      }}
+                      className="flex-1 h-12 bg-surface-container-low border border-outline-variant rounded-md px-2 outline-none focus:border-primary transition-all"
+                    >
+                      <option value="" disabled>Year</option>
+                      {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -387,4 +408,3 @@ export default function Sell() {
     </div>
   );
 }
-

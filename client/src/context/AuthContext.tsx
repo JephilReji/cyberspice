@@ -8,11 +8,11 @@ interface AuthContextValue {
   user: User | null;
   token: string | null;
   setAuth: (data: AuthResponse) => void;
+  updateUser: (updates: Partial<User>) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-
 const TOKEN_KEY = "cyberspice_token";
 const USER_KEY = "cyberspice_user";
 
@@ -30,6 +30,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   }
 
+  function updateUser(updates: Partial<User>) {
+    if (!user) return;
+    const updated = { ...user, ...updates };
+    localStorage.setItem(USER_KEY, JSON.stringify(updated));
+    setUser(updated);
+  }
+
   function logout() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
@@ -38,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, setAuth, logout }}>
+    <AuthContext.Provider value={{ user, token, setAuth, updateUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

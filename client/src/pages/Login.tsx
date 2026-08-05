@@ -105,7 +105,7 @@ export default function Login() {
             <form className="space-y-md" onSubmit={handleSubmit}>
               <div className="space-y-base">
                 <label className="block text-label-md font-label-md text-on-surface-variant" htmlFor="email">
-                  Email or Phone Number
+                  Email or Phone Number <span className="text-error">*</span>
                 </label>
                 <input
                   id="email"
@@ -121,7 +121,7 @@ export default function Login() {
               <div className="space-y-base">
                 <div className="flex justify-between items-center">
                   <label className="block text-label-md font-label-md text-on-surface-variant" htmlFor="password">
-                    Password
+                    Password <span className="text-error">*</span>
                   </label>
                   <a className="text-label-md font-label-md text-on-primary-fixed-variant hover:underline" href="#">
                     Forgot?

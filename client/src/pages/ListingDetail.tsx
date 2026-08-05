@@ -6,6 +6,7 @@ import BottomNav from "../components/BottomNav";
 import { getListingById } from "../api/listings";
 import type { Listing } from "../api/listings";
 import { resolveImageUrl } from "../api/client";
+import { useCart } from "../context/CartContext";
 
 // Static quality metrics per category — cosmetic for demo
 const qualityMetrics: Record<string, { label: string; value: string }[]> = {
@@ -41,13 +42,9 @@ const qualityMetrics: Record<string, { label: string; value: string }[]> = {
   ],
 };
 
-const packagingOptions = [
-  { value: "jute", label: "Eco-friendly Jute Bag", desc: "Standard B2B export quality" },
-  { value: "vacuum", label: "Vacuum Sealed Plastic", desc: "Preserves aroma for up to 24 months" },
-  { value: "crate", label: "Bulk Crate", desc: "Recommended for >50kg orders" },
-];
 
 export default function ListingDetail() {
+  const { addItem } = useCart();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -55,7 +52,7 @@ export default function ListingDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(10);
-  const [selectedPackaging, setSelectedPackaging] = useState("jute");
+  const [selectedPackaging] = useState("jute");
   const [activeImage, setActiveImage] = useState(0);
 
   useEffect(() => {
@@ -111,6 +108,8 @@ export default function ListingDetail() {
     .map((w) => w[0])
     .join("")
     .toUpperCase();
+
+    
 
   return (
     <div className="min-h-screen bg-background text-on-surface pb-24 md:pb-0">
@@ -202,26 +201,45 @@ export default function ListingDetail() {
 
             <div className="h-px bg-outline-variant" />
 
-            {/* Quantity Slider */}
-            <div className="space-y-2">
-              <label className="block text-label-md font-label-md text-on-surface">
-                Quantity ({listing.unit === "Gm" ? "Grams" : "Kilograms"})
-              </label>
-              <div className="flex items-center space-x-4 bg-surface-container-low p-2 rounded-lg border border-outline-variant">
-                <input
-                  type="range"
-                  min={1}
-                  max={listing.totalAvailable}
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="flex-grow accent-primary cursor-pointer h-2 rounded-lg"
-                />
-                <div className="flex items-center bg-surface-container-lowest border border-outline-variant rounded px-3 py-1 min-w-[80px] justify-center">
-                  <span className="text-headline-md font-bold text-primary">{quantity}</span>
-                  <span className="ml-1 text-label-md text-secondary">{listing.unit.toLowerCase()}</span>
-                </div>
-              </div>
-            </div>
+            {/* Quantity Input */}
+        <div className="space-y-2">
+        <label className="block text-label-md font-label-md text-on-surface">
+        Quantity ({listing.unit === "Gm" ? "Grams" : "Kilograms"})
+        </label>
+        <div className="flex items-center gap-sm">
+        <button
+        type="button"
+        onClick={() => setQuantity((q) => Math.max(1, q - 10))}
+        className="w-11 h-11 rounded-lg border border-outline-variant bg-surface-container-low hover:bg-surface-container hover:border-primary transition-all flex items-center justify-center text-on-surface"
+        >
+        <span className="material-symbols-outlined">remove</span>
+        </button>
+        <input
+          type="number"
+          min={1}
+          max={listing.maxPurchaseLimit ?? listing.totalAvailable}
+          value={quantity}
+          onChange={(e) => {
+          const val = Number(e.target.value);
+          const max = listing.maxPurchaseLimit ?? listing.totalAvailable;
+          if (val >= 1 && val <= max) setQuantity(val);
+          }}
+          className="w-28 h-11 text-center font-bold text-primary text-body-lg border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+        />
+        <button
+          type="button"
+          onClick={() => setQuantity((q) => Math.min(listing.maxPurchaseLimit ?? listing.totalAvailable, q + 10))}
+          className="w-11 h-11 rounded-lg border border-outline-variant bg-surface-container-low hover:bg-surface-container hover:border-primary transition-all flex items-center justify-center text-on-surface"
+          >
+              <span className="material-symbols-outlined">add</span>
+            </button>
+            <span className="text-label-md text-secondary">{listing.unit}</span>
+          </div>
+          <p className="text-[11px] text-secondary">
+            Available: {listing.totalAvailable} {listing.unit}
+            {listing.maxPurchaseLimit ? ` · Max order: ${listing.maxPurchaseLimit} ${listing.unit}` : ""}
+          </p>
+        </div>
 
             {/* Supplier Profile */}
             <div className="pt-4 border-t border-outline-variant">
@@ -244,31 +262,6 @@ export default function ListingDetail() {
               </div>
             </div>
 
-            {/* Packaging Options */}
-            <div className="space-y-2">
-              <label className="block text-label-md font-label-md text-on-surface">Packaging Type</label>
-              <div className="grid grid-cols-1 gap-2">
-                {packagingOptions.map((opt) => (
-                  <label
-                    key={opt.value}
-                    className="relative flex items-center p-4 border border-outline-variant rounded-lg cursor-pointer hover:bg-surface-container-low transition-colors"
-                  >
-                    <input
-                      type="radio"
-                      name="packaging"
-                      value={opt.value}
-                      checked={selectedPackaging === opt.value}
-                      onChange={() => setSelectedPackaging(opt.value)}
-                      className="w-5 h-5 text-primary focus:ring-primary border-outline"
-                    />
-                    <div className="ml-3">
-                      <span className="block text-label-md font-bold text-on-surface">{opt.label}</span>
-                      <span className="block text-body-sm text-secondary">{opt.desc}</span>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
 
             {/* Price & Checkout */}
             <div className="bg-surface-container border border-outline-variant rounded-xl p-md space-y-md">

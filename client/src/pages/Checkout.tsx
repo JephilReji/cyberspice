@@ -11,7 +11,7 @@ export default function Checkout() {
 
   const gst = Math.round(subtotal * 0.05);
   const grandTotal = subtotal + gst;
-
+  
   const [form, setForm] = useState({
     fullName: "",
     company: "",
@@ -20,7 +20,9 @@ export default function Checkout() {
     state: "",
     pincode: "",
     phone: "",
+    
   });
+  
   const [error, setError] = useState<string | null>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {

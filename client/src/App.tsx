@@ -10,6 +10,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 import OrderSuccess from "./pages/OrderSuccess";
+import Profile from "./pages/Profile";
 import ListingDetail from "./pages/ListingDetail";
 import NewsArticle from "./pages/NewsArticle";
 
@@ -28,6 +29,7 @@ function App() {
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/payment" element={<Payment />} />
       <Route path="/order-success" element={<OrderSuccess />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="/listing/:id" element={<ListingDetail />} />
       <Route path="/news/:articleId" element={<NewsArticle />} />
     </Routes>
