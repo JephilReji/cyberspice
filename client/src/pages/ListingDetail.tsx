@@ -6,7 +6,6 @@ import BottomNav from "../components/BottomNav";
 import { getListingById } from "../api/listings";
 import type { Listing } from "../api/listings";
 import { resolveImageUrl } from "../api/client";
-import { useCart } from "../context/CartContext";
 
 // Static quality metrics per category — cosmetic for demo
 const qualityMetrics: Record<string, { label: string; value: string }[]> = {
@@ -44,7 +43,6 @@ const qualityMetrics: Record<string, { label: string; value: string }[]> = {
 
 
 export default function ListingDetail() {
-  const { addItem } = useCart();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
