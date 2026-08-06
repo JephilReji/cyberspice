@@ -4,12 +4,16 @@ import { GoogleLogin } from "@react-oauth/google";
 import type { CredentialResponse } from "@react-oauth/google";
 import { sendOtp, registerWithEmail, loginWithGoogle } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
+import { useSplash } from "../context/SplashContext";
+
 
 type Step = "form" | "otp";
 
 export default function Register() {
   const navigate = useNavigate();
   const { setAuth } = useAuth();
+  const { triggerSplash } = useSplash();
+
 
   const [step, setStep] = useState<Step>("form");
   const [fullName, setFullName] = useState("");
@@ -65,6 +69,7 @@ export default function Register() {
     try {
       const data = await registerWithEmail({ name: fullName, email, password, phone, otp });
       setAuth(data);
+      triggerSplash();
       navigate("/dashboard");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Registration failed. Please try again.");
@@ -79,6 +84,7 @@ export default function Register() {
     try {
       const data = await loginWithGoogle(credential.credential);
       setAuth(data);
+      triggerSplash();
       navigate("/dashboard");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Google sign-up failed.");

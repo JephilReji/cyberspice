@@ -22,7 +22,7 @@ export default function Payment() {
   const handlingFee = method === "pod" ? 5 : 0;
   const grandTotal = subtotal + gst + handlingFee;
 
-  if (!deliveryAddress || items.length === 0) {
+  if (!deliveryAddress) {
     navigate("/cart");
     return null;
   }
@@ -31,31 +31,31 @@ export default function Payment() {
     setError(null);
     setProcessing(true);
     try {
-      const orderItems = items.map((item) => ({
-        listing: item.listingId,
-        title: item.title,
-        quantity: item.quantity,
-        unit: item.unit,
-        pricePerUnit: item.pricePerUnit,
-        subtotal: item.subtotal,
-        imageUrl: item.imageUrl,
-      }));
+          const orderItems = items.map((item) => ({
+            listing: item.listingId,
+            title: item.title,
+            quantity: item.quantity,
+            unit: item.unit,
+            pricePerUnit: item.pricePerUnit,
+            subtotal: item.subtotal,
+            imageUrl: item.imageUrl,
+          }));
 
-      const { data } = await apiClient.post("/orders", {
-        items: orderItems,
-        deliveryAddress,
-        paymentMethod: method,
-      });
+          const { data } = await apiClient.post("/orders", {
+            items: orderItems,
+            deliveryAddress,
+            paymentMethod: method,
+          });
 
-      clearCart();
-      navigate("/order-success", { state: { order: data } });
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Could not place order. Please try again.");
-    } finally {
-      setProcessing(false);
-    }
-  }
-
+          clearCart();
+          navigate("/order-success", { state: { order: data } });
+        } catch (err: any) {
+          console.error("Order error:", err?.response?.data);
+          setError(err?.response?.data?.message || "Could not place order. Please try again.");
+        } finally {
+          setProcessing(false);
+        }
+      }
   return (
     <div className="min-h-screen bg-background text-on-surface pb-24 md:pb-0">
       <Navbar />
@@ -247,3 +247,4 @@ export default function Payment() {
     </div>
   );
 }
+

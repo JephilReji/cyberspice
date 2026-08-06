@@ -1,6 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import { useSplash } from "../context/SplashContext";
+
 
 const navLinks = [
   { label: "Home", path: "/dashboard" },
@@ -15,8 +17,11 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { totalItems } = useCart();
+  const { triggerSplash } = useSplash();
+
 
   function handleLogout() {
+    triggerSplash();
     logout();
     navigate("/login");
   }

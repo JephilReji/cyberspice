@@ -4,10 +4,14 @@ import { GoogleLogin } from "@react-oauth/google";
 import type { CredentialResponse } from "@react-oauth/google";
 import { loginWithEmail, loginWithGoogle } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
+import { useSplash } from "../context/SplashContext";
+
 
 export default function Login() {
   const navigate = useNavigate();
   const { setAuth } = useAuth();
+  const { triggerSplash } = useSplash();
+
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,6 +26,7 @@ export default function Login() {
     try {
       const data = await loginWithEmail(email, password);
       setAuth(data);
+      triggerSplash();
       navigate("/dashboard");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Login failed. Check your credentials.");
@@ -36,6 +41,7 @@ export default function Login() {
     try {
       const data = await loginWithGoogle(credential.credential);
       setAuth(data);
+      triggerSplash();
       navigate("/dashboard");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Google sign-in failed.");

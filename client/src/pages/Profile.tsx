@@ -30,6 +30,7 @@ export default function Profile() {
   const [name, setName] = useState(user?.name ?? "");
   const [phone, setPhone] = useState("");
   const [photoUrl, setPhotoUrl] = useState(user?.photoUrl ?? "");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [profileMsg, setProfileMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
 
@@ -54,6 +55,42 @@ export default function Profile() {
       setAddresses(res.data.savedAddresses ?? []);
     }).catch(() => {});
   }, [user, navigate]);
+
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setProfileMsg({ type: "error", text: "Photo must be under 5MB." });
+      return;
+    }
+
+    setUploadingPhoto(true);
+    setProfileMsg(null);
+
+    try {
+      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+      const preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", preset);
+
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!data.secure_url) throw new Error("Upload failed");
+
+      setPhotoUrl(data.secure_url);
+      setProfileMsg({ type: "success", text: "Photo uploaded. Click Save Changes to apply." });
+    } catch {
+      setProfileMsg({ type: "error", text: "Photo upload failed. Please try again." });
+    } finally {
+      setUploadingPhoto(false);
+    }
+  }
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -192,17 +229,53 @@ export default function Profile() {
                     </div>
                   )}
                   <form onSubmit={handleSaveProfile} className="space-y-md">
+
+                    {/* Photo Upload */}
                     <div>
-                      <label className="block text-label-md font-label-md mb-1">Profile Photo URL</label>
-                      <div className="flex gap-sm items-center">
-                        <input type="url" value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)} placeholder="https://example.com/photo.jpg" className={inputClass} />
-                        {photoUrl && (
-                          <img src={photoUrl} alt="Preview" className="w-11 h-11 rounded-full object-cover border border-outline-variant flex-shrink-0"
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      <label className="block text-label-md font-label-md mb-2">Profile Photo</label>
+                      <div className="flex items-center gap-md">
+                        {photoUrl ? (
+                          <img src={photoUrl} alt="Profile" className="w-16 h-16 rounded-full object-cover border-2 border-primary flex-shrink-0" />
+                        ) : (
+                          <div className="w-16 h-16 rounded-full bg-primary text-on-primary flex items-center justify-center text-2xl font-bold flex-shrink-0">
+                            {user?.name?.[0]?.toUpperCase()}
+                          </div>
                         )}
+                        <div className="flex flex-col gap-xs">
+                          <label className="cursor-pointer bg-surface-container-low border border-outline-variant hover:border-primary transition-all rounded-lg px-sm py-xs flex items-center gap-xs text-label-md font-label-md">
+                            {uploadingPhoto ? (
+                              <>
+                                <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                                Uploading...
+                              </>
+                            ) : (
+                              <>
+                                <span className="material-symbols-outlined text-[18px]">upload</span>
+                                {photoUrl ? "Change Photo" : "Upload Photo"}
+                              </>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handlePhotoUpload}
+                              disabled={uploadingPhoto}
+                            />
+                          </label>
+                          {photoUrl && (
+                            <button
+                              type="button"
+                              onClick={() => setPhotoUrl("")}
+                              className="text-error text-label-md hover:underline text-left"
+                            >
+                              Remove photo
+                            </button>
+                          )}
+                          <p className="text-[11px] text-secondary">JPG, PNG or WEBP. Max 5MB.</p>
+                        </div>
                       </div>
-                      <p className="text-[11px] text-secondary mt-1">Paste a direct image URL. Google profile photos work automatically.</p>
                     </div>
+
                     <div>
                       <label className="block text-label-md font-label-md mb-1">Full Name <span className="text-error">*</span></label>
                       <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className={inputClass} />
@@ -216,7 +289,7 @@ export default function Profile() {
                       <label className="block text-label-md font-label-md mb-1">Phone Number</label>
                       <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" className={inputClass} />
                     </div>
-                    <button type="submit" disabled={savingProfile} className="bg-primary text-on-primary h-11 px-lg rounded-lg font-label-md hover:opacity-90 transition-all disabled:opacity-60">
+                    <button type="submit" disabled={savingProfile || uploadingPhoto} className="bg-primary text-on-primary h-11 px-lg rounded-lg font-label-md hover:opacity-90 transition-all disabled:opacity-60">
                       {savingProfile ? "Saving..." : "Save Changes"}
                     </button>
                   </form>

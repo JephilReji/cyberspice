@@ -6,8 +6,8 @@ import BottomNav from "../components/BottomNav";
 import { getListingById } from "../api/listings";
 import type { Listing } from "../api/listings";
 import { resolveImageUrl } from "../api/client";
+import { useCart } from "../context/CartContext";
 
-// Static quality metrics per category — cosmetic for demo
 const qualityMetrics: Record<string, { label: string; value: string }[]> = {
   "black-pepper": [
     { label: "Piperine Content", value: "5.8% min" },
@@ -41,8 +41,8 @@ const qualityMetrics: Record<string, { label: string; value: string }[]> = {
   ],
 };
 
-
 export default function ListingDetail() {
+  const { addItem } = useCart();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -50,7 +50,6 @@ export default function ListingDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(10);
-  const [selectedPackaging] = useState("jute");
   const [activeImage, setActiveImage] = useState(0);
 
   useEffect(() => {
@@ -65,9 +64,7 @@ export default function ListingDetail() {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Navbar />
-        <main className="flex-1 flex items-center justify-center text-secondary">
-          Loading...
-        </main>
+        <main className="flex-1 flex items-center justify-center text-secondary">Loading...</main>
       </div>
     );
   }
@@ -89,7 +86,6 @@ export default function ListingDetail() {
     maximumFractionDigits: 2,
   });
 
-  // Build image array from available images, filter out undefined
   const images = [
     listing.images?.cover,
     listing.images?.macro,
@@ -99,7 +95,6 @@ export default function ListingDetail() {
 
   const activeImageUrl = resolveImageUrl(images[activeImage] ?? images[0]);
 
-  // Initials from title for supplier avatar
   const initials = listing.title
     .split(" ")
     .slice(0, 2)
@@ -107,7 +102,20 @@ export default function ListingDetail() {
     .join("")
     .toUpperCase();
 
-    
+  function handleAddToCart() {
+    if (!listing) return;
+    addItem({
+      listingId: listing._id,
+      title: listing.title,
+      quantity,
+      unit: listing.unit,
+      pricePerUnit: listing.pricePerUnit,
+      subtotal: quantity * listing.pricePerUnit,
+      imageUrl: listing.images?.cover,
+      packaging: listing.packagingType,
+    });
+    navigate("/cart");
+  }
 
   return (
     <div className="min-h-screen bg-background text-on-surface pb-24 md:pb-0">
@@ -117,7 +125,7 @@ export default function ListingDetail() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-lg items-start">
 
           {/* Left: Image Gallery */}
-          <div className="md:col-span-7 lg:col-span-7 flex flex-col space-y-sm">
+          <div className="md:col-span-7 flex flex-col space-y-sm">
             <div className="w-full aspect-[4/3] rounded-lg overflow-hidden border border-outline-variant bg-surface-container-lowest relative group">
               {activeImageUrl ? (
                 <img
@@ -143,9 +151,7 @@ export default function ListingDetail() {
                     <button
                       key={i}
                       onClick={() => setActiveImage(i)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        i === activeImage ? "border-primary" : "border-outline-variant"
-                      }`}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${i === activeImage ? "border-primary" : "border-outline-variant"}`}
                     >
                       {url ? (
                         <img src={url} alt={`View ${i + 1}`} className="w-full h-full object-cover" />
@@ -166,7 +172,7 @@ export default function ListingDetail() {
           </div>
 
           {/* Right: Details & Order */}
-          <div className="md:col-span-5 lg:col-span-5 space-y-sm">
+          <div className="md:col-span-5 space-y-sm">
             <div className="flex items-center space-x-2 text-secondary mb-2">
               {listing.origin && (
                 <>
@@ -186,10 +192,7 @@ export default function ListingDetail() {
               <h3 className="text-label-md font-bold text-primary mb-2">Quality Analysis</h3>
               <ul className="space-y-2 text-body-sm text-on-surface-variant">
                 {metrics.map((m, i) => (
-                  <li
-                    key={m.label}
-                    className={`flex justify-between ${i < metrics.length - 1 ? "border-b border-outline-variant pb-1" : ""}`}
-                  >
+                  <li key={m.label} className={`flex justify-between ${i < metrics.length - 1 ? "border-b border-outline-variant pb-1" : ""}`}>
                     <span>{m.label}</span>
                     <span className="font-bold text-on-surface">{m.value}</span>
                   </li>
@@ -200,44 +203,44 @@ export default function ListingDetail() {
             <div className="h-px bg-outline-variant" />
 
             {/* Quantity Input */}
-        <div className="space-y-2">
-        <label className="block text-label-md font-label-md text-on-surface">
-        Quantity ({listing.unit === "Gm" ? "Grams" : "Kilograms"})
-        </label>
-        <div className="flex items-center gap-sm">
-        <button
-        type="button"
-        onClick={() => setQuantity((q) => Math.max(1, q - 10))}
-        className="w-11 h-11 rounded-lg border border-outline-variant bg-surface-container-low hover:bg-surface-container hover:border-primary transition-all flex items-center justify-center text-on-surface"
-        >
-        <span className="material-symbols-outlined">remove</span>
-        </button>
-        <input
-          type="number"
-          min={1}
-          max={listing.maxPurchaseLimit ?? listing.totalAvailable}
-          value={quantity}
-          onChange={(e) => {
-          const val = Number(e.target.value);
-          const max = listing.maxPurchaseLimit ?? listing.totalAvailable;
-          if (val >= 1 && val <= max) setQuantity(val);
-          }}
-          className="w-28 h-11 text-center font-bold text-primary text-body-lg border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-        />
-        <button
-          type="button"
-          onClick={() => setQuantity((q) => Math.min(listing.maxPurchaseLimit ?? listing.totalAvailable, q + 10))}
-          className="w-11 h-11 rounded-lg border border-outline-variant bg-surface-container-low hover:bg-surface-container hover:border-primary transition-all flex items-center justify-center text-on-surface"
-          >
-              <span className="material-symbols-outlined">add</span>
-            </button>
-            <span className="text-label-md text-secondary">{listing.unit}</span>
-          </div>
-          <p className="text-[11px] text-secondary">
-            Available: {listing.totalAvailable} {listing.unit}
-            {listing.maxPurchaseLimit ? ` · Max order: ${listing.maxPurchaseLimit} ${listing.unit}` : ""}
-          </p>
-        </div>
+            <div className="space-y-2">
+              <label className="block text-label-md font-label-md text-on-surface">
+                Quantity ({listing.unit === "Gm" ? "Grams" : "Kilograms"})
+              </label>
+              <div className="flex items-center gap-sm">
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 10))}
+                  className="w-11 h-11 rounded-lg border border-outline-variant bg-surface-container-low hover:bg-surface-container hover:border-primary transition-all flex items-center justify-center text-on-surface"
+                >
+                  <span className="material-symbols-outlined">remove</span>
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  max={listing.maxPurchaseLimit ?? listing.totalAvailable}
+                  value={quantity}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    const max = listing.maxPurchaseLimit ?? listing.totalAvailable;
+                    if (val >= 1 && val <= max) setQuantity(val);
+                  }}
+                  className="w-28 h-11 text-center font-bold text-primary text-body-lg border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.min(listing.maxPurchaseLimit ?? listing.totalAvailable, q + 10))}
+                  className="w-11 h-11 rounded-lg border border-outline-variant bg-surface-container-low hover:bg-surface-container hover:border-primary transition-all flex items-center justify-center text-on-surface"
+                >
+                  <span className="material-symbols-outlined">add</span>
+                </button>
+                <span className="text-label-md text-secondary">{listing.unit}</span>
+              </div>
+              <p className="text-[11px] text-secondary">
+                Available: {listing.totalAvailable} {listing.unit}
+                {listing.maxPurchaseLimit ? ` · Max order: ${listing.maxPurchaseLimit} ${listing.unit}` : ""}
+              </p>
+            </div>
 
             {/* Supplier Profile */}
             <div className="pt-4 border-t border-outline-variant">
@@ -260,8 +263,7 @@ export default function ListingDetail() {
               </div>
             </div>
 
-
-            {/* Price & Checkout */}
+            {/* Price & Add to Cart */}
             <div className="bg-surface-container border border-outline-variant rounded-xl p-md space-y-md">
               <div className="flex justify-between items-end">
                 <span className="text-body-lg text-on-surface-variant">Estimated Total</span>
@@ -275,11 +277,11 @@ export default function ListingDetail() {
                 </div>
               </div>
               <button
-                onClick={() => navigate(`/checkout/${listing._id}?qty=${quantity}&packaging=${selectedPackaging}`)}
-                className="w-full bg-primary text-on-primary py-4 rounded-lg font-bold text-body-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
+                onClick={handleAddToCart}
+                className="w-full bg-primary text-on-primary py-4 rounded-lg font-bold text-body-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-sm"
               >
-                <span>Proceed to Checkout</span>
-                <span className="material-symbols-outlined">arrow_forward</span>
+                <span className="material-symbols-outlined">shopping_cart</span>
+                Add to Cart
               </button>
               <p className="text-center text-body-sm text-secondary">
                 Ships from Cochin Port in 3-5 business days.
@@ -294,10 +296,7 @@ export default function ListingDetail() {
                 { icon: "local_shipping", label: "Bulk Ready" },
               ].map((badge) => (
                 <div key={badge.label} className="text-center p-2">
-                  <span
-                    className="material-symbols-outlined text-primary mb-1 block"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
+                  <span className="material-symbols-outlined text-primary mb-1 block" style={{ fontVariationSettings: "'FILL' 1" }}>
                     {badge.icon}
                   </span>
                   <span className="block text-label-caps text-secondary uppercase">{badge.label}</span>
