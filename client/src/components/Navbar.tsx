@@ -3,7 +3,6 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { useSplash } from "../context/SplashContext";
 
-
 const navLinks = [
   { label: "Home", path: "/dashboard" },
   { label: "Buy", path: "/buy" },
@@ -19,7 +18,6 @@ export default function Navbar() {
   const { totalItems } = useCart();
   const { triggerSplash } = useSplash();
 
-
   function handleLogout() {
     triggerSplash();
     logout();
@@ -30,7 +28,7 @@ export default function Navbar() {
     <header className="bg-surface w-full top-0 border-b border-outline-variant sticky z-50">
       <div className="flex justify-between items-center w-full px-sm md:px-lg max-w-container-max mx-auto h-16">
         <Link to="/dashboard" className="font-bold text-primary text-xl md:text-2xl tracking-tight">
-          Cyber<span className="text-primary-container">Spice</span>
+          Cyber<span className="text-primary">Spice</span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-md">
@@ -53,15 +51,6 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-sm">
-          <div className="hidden lg:flex items-center bg-surface-container-low px-sm py-xs rounded-full border border-outline-variant">
-            <span className="material-symbols-outlined text-secondary mr-2 text-[18px]">search</span>
-            <input
-              className="bg-transparent border-none focus:ring-0 text-body-sm w-40 outline-none placeholder:text-outline"
-              placeholder="Search marketplace..."
-              type="text"
-            />
-          </div>
-
           <Link to="/cart" className="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low transition-colors">
             <span className="material-symbols-outlined text-on-surface">shopping_cart</span>
             {totalItems > 0 && (
@@ -74,9 +63,13 @@ export default function Navbar() {
           {user ? (
             <div className="relative group">
               <button className="flex items-center gap-xs bg-surface-container-low border border-outline-variant rounded-full px-sm py-xs hover:border-primary transition-colors">
-                <div className="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">
-                  {user.name?.[0]?.toUpperCase() ?? "U"}
-                </div>
+                {user.photoUrl ? (
+                  <img src={user.photoUrl} alt={user.name} className="w-6 h-6 rounded-full object-cover" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">
+                    {user.name?.[0]?.toUpperCase() ?? "U"}
+                  </div>
+                )}
                 <span className="hidden md:block text-label-md font-label-md text-on-surface max-w-[100px] truncate">
                   {user.name}
                 </span>
@@ -98,10 +91,7 @@ export default function Navbar() {
               </div>
             </div>
           ) : (
-            <Link
-              to="/login"
-              className="bg-primary text-on-primary px-sm py-xs rounded-lg text-label-md font-label-md hover:opacity-90 transition-opacity"
-            >
+            <Link to="/login" className="bg-primary text-on-primary px-sm py-xs rounded-lg text-label-md font-label-md hover:opacity-90 transition-opacity">
               Sign In
             </Link>
           )}

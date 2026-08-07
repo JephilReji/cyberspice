@@ -28,8 +28,14 @@ export async function getFeaturedListings() {
   return data;
 }
 
-export async function getAllListings() {
-  const { data } = await apiClient.get<Listing[]>("/listings");
+export async function getAllListings(search?: string) {
+  const params = search ? { search } : {};
+  const { data } = await apiClient.get<Listing[]>("/listings", { params });
+  return data;
+}
+
+export async function getListingById(id: string) {
+  const { data } = await apiClient.get<Listing>(`/listings/${id}`);
   return data;
 }
 
@@ -70,10 +76,5 @@ export async function createListing(payload: CreateListingPayload) {
   const { data } = await apiClient.post<Listing>("/listings", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  return data;
-}
-
-export async function getListingById(id: string) {
-  const { data } = await apiClient.get<Listing>(`/listings/${id}`);
   return data;
 }

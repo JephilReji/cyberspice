@@ -16,16 +16,6 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-const categoryKeywords: Record<string, string> = {
-  business: "spice,trade,market",
-  food: "spices,agriculture,food",
-  default: "spices,agriculture,farming",
-};
-
-function unsplashUrl(keywords: string) {
-  return `https://source.unsplash.com/800x400/?${keywords}`;
-}
-
 export default function Home() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -75,9 +65,6 @@ export default function Home() {
         {/* Hero Banner */}
         <section className="mb-lg">
           <div className="relative bg-primary rounded-xl p-lg md:p-xl overflow-hidden">
-            <div className="absolute inset-0 opacity-10"
-              style={{ backgroundImage: "url('https://source.unsplash.com/1200x400/?spices,market')", backgroundSize: "cover", backgroundPosition: "center" }}
-            />
             <div className="relative z-10">
               <span className="inline-flex items-center gap-xs bg-on-primary/20 text-on-primary px-sm py-1 rounded-full text-label-caps mb-md">
                 <span className="w-1.5 h-1.5 rounded-full bg-on-primary animate-pulse inline-block" />
@@ -251,44 +238,31 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
               {news.map((article) => {
-                const keyword = article.category?.[0] ?? "default";
-                const imageUrl = unsplashUrl(categoryKeywords[keyword] ?? categoryKeywords.default);
-                const encoded = encodeURIComponent(article.article_id);
-                return (
-                  <Link
-                    key={article.article_id}
-                    to={`/news/${encoded}`}
-                    state={{ article }}
-                    className="group bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md transition-all rounded-lg overflow-hidden block"
-                  >
-                    <div className="h-44 overflow-hidden bg-surface-container relative">
-                      <img
-                        src={imageUrl}
-                        alt={article.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => { (e.target as HTMLImageElement).src = unsplashUrl(categoryKeywords.default); }}
-                      />
-                      <div className="absolute top-2 left-2 bg-primary text-on-primary text-label-caps px-2 py-0.5 rounded text-[10px] uppercase">
-                        {article.category?.[0] ?? "News"}
-                      </div>
-                    </div>
-                    <div className="p-sm">
-                      <p className="text-[11px] text-secondary mb-1 font-medium uppercase tracking-wide">
-                        {timeAgo(article.pubDate)}
-                      </p>
-                      <h3 className="text-label-md font-bold text-on-surface line-clamp-2 mb-xs group-hover:text-primary transition-colors">
-                        {article.title}
-                      </h3>
-                      <p className="text-body-sm text-secondary line-clamp-2 mb-sm">
-                        {article.description ?? ""}
-                      </p>
-                      <span className="text-label-md font-label-md text-primary flex items-center gap-1">
-                        Read detail <span className="material-symbols-outlined text-sm">chevron_right</span>
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
+              const encoded = encodeURIComponent(article.article_id);
+              return (
+                <Link
+                  key={article.article_id}
+                  to={`/news/${encoded}`}
+                  state={{ article }}
+                  className="group bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md transition-all rounded-lg overflow-hidden block p-md"
+                >
+                  <div className="flex items-center gap-xs mb-sm">
+                    <span className="bg-primary text-on-primary text-label-caps px-2 py-0.5 rounded text-[10px] uppercase">
+                      {article.category?.[0] ?? "News"}
+                    </span>
+                    <span className="text-[11px] text-secondary">{timeAgo(article.pubDate)}</span>
+                    <span className="text-outline">·</span>
+                    <span className="text-[11px] text-secondary">{article.source_name}</span>
+                  </div>
+                  <h3 className="text-label-md font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors mb-xs">
+                    {article.title}
+                  </h3>
+                  <span className="text-label-md font-label-md text-primary flex items-center gap-1 mt-sm">
+                    Read more <span className="material-symbols-outlined text-sm">chevron_right</span>
+                  </span>
+                </Link>
+              );
+            })}
             </div>
           )}
         </section>
