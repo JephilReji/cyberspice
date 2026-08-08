@@ -244,20 +244,20 @@ export default function Home() {
                   key={article.article_id}
                   to={`/news/${encoded}`}
                   state={{ article }}
-                  className="group bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md transition-all rounded-lg overflow-hidden block p-md"
+                  className="group bg-surface-container-lowest border border-outline-variant hover:border-primary hover:shadow-md transition-all rounded-lg p-md block"
                 >
-                  <div className="flex items-center gap-xs mb-sm">
-                    <span className="bg-primary text-on-primary text-label-caps px-2 py-0.5 rounded text-[10px] uppercase">
+                  <div className="flex items-center gap-xs mb-sm flex-wrap">
+                    <span className="bg-primary text-on-primary text-[10px] px-2 py-0.5 rounded uppercase font-bold">
                       {article.category?.[0] ?? "News"}
                     </span>
                     <span className="text-[11px] text-secondary">{timeAgo(article.pubDate)}</span>
-                    <span className="text-outline">·</span>
+                    <span className="text-outline text-[11px]">·</span>
                     <span className="text-[11px] text-secondary">{article.source_name}</span>
                   </div>
-                  <h3 className="text-label-md font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors mb-xs">
+                  <h3 className="text-label-md font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors mb-sm">
                     {article.title}
                   </h3>
-                  <span className="text-label-md font-label-md text-primary flex items-center gap-1 mt-sm">
+                  <span className="text-label-md text-primary flex items-center gap-1">
                     Read more <span className="material-symbols-outlined text-sm">chevron_right</span>
                   </span>
                 </Link>

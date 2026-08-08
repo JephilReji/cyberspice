@@ -262,7 +262,7 @@ export default function Sell() {
           <section className="space-y-6">
             <div className="bg-white border border-outline-variant p-6 rounded-lg space-y-6">
               <div>
-                <label className="block text-label-md font-label-md text-on-surface mb-2">Product Title</label>
+                <label className="block text-label-md font-label-md text-on-surface mb-2">Product Title <span className="text-error">*</span></label>
                 <input
                   type="text"
                   value={title}
@@ -274,7 +274,7 @@ export default function Sell() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-label-md font-label-md text-on-surface mb-2">Price per Unit (₹)</label>
+                  <label className="block text-label-md font-label-md text-on-surface mb-2">Price per Unit (₹) <span className="text-error">*</span></label>
                   <div className="flex gap-2">
                     <input
                       type="number"
@@ -295,7 +295,7 @@ export default function Sell() {
                 </div>
                 <div>
                   <label className="block text-label-md font-label-md text-on-surface mb-2">
-                    Total Available ({unit})
+                    Total Available ({unit}) <span className="text-error">*</span>
                   </label>
                   <input
                     type="number"
@@ -307,7 +307,7 @@ export default function Sell() {
                 </div>
                 <div>
                   <label className="block text-label-md font-label-md text-on-surface mb-2">
-                    Max Purchase Limit ({unit})
+                    Max Purchase Limit ({unit}) <span className="text-error">*</span>
                   </label>
                   <input
                     type="number"
@@ -332,7 +332,7 @@ export default function Sell() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-label-md font-label-md text-on-surface mb-2">Harvest Date</label>
+                  <label className="block text-label-md font-label-md text-on-surface mb-2">Harvest Date <span className="text-error">*</span></label>
                   <div className="flex gap-2">
                     <select
                       value={harvestDate.split(" ")[0] ?? ""}
@@ -365,7 +365,7 @@ export default function Sell() {
               </div>
 
               <div>
-                <label className="block text-label-md font-label-md text-on-surface mb-2">Detailed Description</label>
+                <label className="block text-label-md font-label-md text-on-surface mb-2">Detailed Description <span className="text-error">*</span></label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}

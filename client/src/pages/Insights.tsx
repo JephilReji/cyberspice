@@ -37,7 +37,7 @@ const categoryLabels: Record<string, string> = {
   chilies: "CHILIES",
 };
 
-const categoryKeywords: Record<string, string> = {
+const categoryFallback: Record<string, string> = {
   "black-pepper": "pepper,spice",
   cardamom: "cardamom,spice",
   cinnamon: "cinnamon,spice",
@@ -100,6 +100,7 @@ export default function Insights() {
           </p>
         </div>
 
+        {/* Live Market Index */}
         <section className="mb-xl">
           <div className="flex items-center justify-between mb-md">
             <h2 className="text-headline-md font-headline-md flex items-center gap-xs">
@@ -143,6 +144,8 @@ export default function Insights() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
           <div className="lg:col-span-2 space-y-lg">
+
+            {/* Most in Demand */}
             <section>
               <h2 className="text-headline-md font-headline-md mb-md">Most in Demand</h2>
               <div className="space-y-md">
@@ -152,7 +155,7 @@ export default function Insights() {
                     ))
                   : marketData?.mostInDemand.map((item, i) => {
                       const coverUrl = resolveImageUrl(item.images?.cover) ??
-                        unsplashUrl(categoryKeywords[item.category] ?? categoryKeywords.default);
+                        unsplashUrl(categoryFallback[item.category] ?? categoryFallback.default);
                       const demandScore = Math.max(60, 95 - i * 14);
                       const demandLabel = i === 0 ? "High Interest" : i === 1 ? "Rising" : "Steady";
                       return (
@@ -163,7 +166,7 @@ export default function Insights() {
                                 src={coverUrl}
                                 alt={item.title}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                onError={(e) => { (e.target as HTMLImageElement).src = unsplashUrl(categoryKeywords.default); }}
+                                onError={(e) => { (e.target as HTMLImageElement).src = unsplashUrl(categoryFallback.default); }}
                               />
                             </div>
                             <div className="flex-grow">
@@ -192,6 +195,7 @@ export default function Insights() {
               </div>
             </section>
 
+            {/* Agriculture News — text only, no images */}
             <section>
               <div className="flex items-center justify-between mb-md">
                 <h2 className="text-headline-md font-headline-md">Agriculture News</h2>
@@ -202,36 +206,34 @@ export default function Insights() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                 {loading
                   ? [...Array(4)].map((_, i) => (
-                      <div key={i} className="h-48 bg-surface-container-low border border-outline-variant animate-pulse rounded" />
+                      <div key={i} className="h-32 bg-surface-container-low border border-outline-variant animate-pulse rounded" />
                     ))
+                  : news.length === 0 ? (
+                      <p className="text-body-sm text-secondary col-span-2">No news available right now.</p>
+                    )
                   : news.slice(0, 4).map((article) => {
-                      const keyword = article.keywords?.find((k) => categoryKeywords[k]) ?? "spices";
-                      const imageUrl = unsplashUrl(categoryKeywords[keyword] ?? `${keyword},spice,agriculture`);
                       const encoded = encodeURIComponent(article.article_id);
                       return (
                         <Link
                           key={article.article_id}
                           to={`/news/${encoded}`}
                           state={{ article }}
-                          className="group bg-surface-container-lowest border border-outline-variant hover:border-primary transition-all block"
+                          className="group bg-surface-container-lowest border border-outline-variant hover:border-primary transition-all block p-md rounded-lg"
                         >
-                          <div className="h-40 overflow-hidden bg-surface-container">
-                            <img
-                              src={imageUrl}
-                              alt={article.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                              onError={(e) => { (e.target as HTMLImageElement).src = unsplashUrl(categoryKeywords.default); }}
-                            />
+                          <div className="flex items-center gap-xs mb-sm flex-wrap">
+                            <span className="bg-primary text-on-primary text-[10px] px-2 py-0.5 rounded uppercase font-bold">
+                              {article.category?.[0] ?? "News"}
+                            </span>
+                            <span className="text-[11px] text-secondary">{timeAgo(article.pubDate)}</span>
+                            <span className="text-outline text-[11px]">·</span>
+                            <span className="text-[11px] text-secondary">{article.source_name}</span>
                           </div>
-                          <div className="p-sm">
-                            <div className="flex items-center gap-xs mb-xs">
-                              <span className="text-label-caps font-label-caps text-primary">{article.category?.[0]?.toUpperCase() ?? "NEWS"}</span>
-                              <span className="text-outline">•</span>
-                              <span className="text-label-caps font-label-caps text-secondary">{timeAgo(article.pubDate)}</span>
-                            </div>
-                            <h3 className="text-label-md font-bold text-on-surface line-clamp-2 mb-xs group-hover:text-primary transition-colors">{article.title}</h3>
-                            <p className="text-body-sm text-secondary line-clamp-2">{article.description ?? ""}</p>
-                          </div>
+                          <h3 className="text-label-md font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors mb-sm">
+                            {article.title}
+                          </h3>
+                          <span className="text-label-md text-primary flex items-center gap-1">
+                            Read more <span className="material-symbols-outlined text-sm">chevron_right</span>
+                          </span>
                         </Link>
                       );
                     })}
@@ -239,6 +241,7 @@ export default function Insights() {
             </section>
           </div>
 
+          {/* Sidebar */}
           <div className="space-y-md">
             <div className="bg-surface-container-lowest border border-outline-variant p-md">
               <h3 className="text-label-md font-bold text-primary mb-md">Platform Stats</h3>
@@ -253,7 +256,9 @@ export default function Insights() {
                 </li>
                 <li className="flex justify-between">
                   <span className="text-secondary">Total Volume (Kg)</span>
-                  <span className="font-bold">{marketData?.pricesByCategory.reduce((a, b) => a + b.totalVolume, 0).toLocaleString("en-IN") ?? "—"}</span>
+                  <span className="font-bold">
+                    {marketData?.pricesByCategory.reduce((a, b) => a + b.totalVolume, 0).toLocaleString("en-IN") ?? "—"}
+                  </span>
                 </li>
               </ul>
             </div>
